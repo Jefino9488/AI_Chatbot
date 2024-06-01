@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Voice-Recorder" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (ai_chatbot)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (ai_chatbot)" project-jdk-type="Python SDK" />
 </project>
