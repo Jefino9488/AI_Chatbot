@@ -1,0 +1,38 @@
+.App {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.chat-window {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 300px;
+    height: 400px;
+    overflow-y: scroll;
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+
+.message {
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.message.user {
+    text-align: right;
+    color: blue;
+}
+
+.message.bot {
+    text-align: left;
+    color: green;
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+}
+
+button {
+    padding: 10px;
+}
