@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
+from g4f.client import Client
 
 app = Flask(__name__)
 
+client = Client()
 
 @app.after_request
 def add_cors_headers(response):
@@ -21,13 +23,21 @@ def chat():
         chatbot_response = generate_response(user_message)
         return jsonify({'response': chatbot_response})
     else:
-        return jsonify({'message': ['Hello', 'Hi', 'How are you?']})
+        return jsonify({'error': 'Invalid request'}), 400
 
 
 def generate_response(user_message):
-    if user_message.lower() == 'how are you?':
-        return "I'm fine, thank you!"
-    return f"You said: {user_message}"
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user",
+                       "content": user_message
+                       }],
+        )
+        chatbot_response = response.choices[0].message.content.strip()
+        return chatbot_response
+    except Exception as e:
+        return str(e)
 
 
 if __name__ == '__main__':
