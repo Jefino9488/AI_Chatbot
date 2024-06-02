@@ -12,6 +12,10 @@ function App() {
   const handleSendMessage = async () => {
     if (input.trim() === '') return;
 
+    const userMessage = { from: 'user', text: input };
+    setMessages([...messages, userMessage]);
+    setInput('');
+
     try {
       const response = await fetch('http://localhost:8000/chat', {
         method: 'POST',
@@ -24,8 +28,8 @@ function App() {
       if (!response.ok) {
         throw new Error(data.error || 'An error occurred');
       }
-      setMessages([...messages, { from: 'user', text: input }, { from: 'bot', text: data.response }]);
-      setInput('');
+      const botMessage = { from: 'bot', text: data.response };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
       console.error(error);
       alert('An error occurred. Please try again.');
