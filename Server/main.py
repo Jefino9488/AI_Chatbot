@@ -4,12 +4,14 @@ from g4f.client import Client
 app = Flask(__name__)
 client = Client()
 
+
 @app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
+
 
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
@@ -23,12 +25,14 @@ def chat():
     else:
         return jsonify({'error': 'Invalid request method: use POST'}), 400
 
+
 def generate_response(user_message):
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": """
+                you only converse in english
                 You are a helpful assistant with detailed knowledge about XYZ College.
                 Here are some details about XYZ College:
                 - Located in ABC City.
@@ -41,12 +45,17 @@ def generate_response(user_message):
                 - The college has a strong research focus with several research centers in AI, Robotics, and Biotechnology.
                 """},
                 {"role": "user", "content": user_message}
-            ]
+            ],
+            max_tokens=150,
+            temperature=0.5,
+            language="en",
+            
         )
         chatbot_response = response.choices[0].message.content.strip()
         return chatbot_response
     except Exception as e:
         return str(e)
+
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
