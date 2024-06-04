@@ -4,15 +4,24 @@ from g4f.client import Client
 app = Flask(__name__)
 client = Client()
 
+
 @app.after_request
 def add_cors_headers(response):
+    """
+    :param response:
+    :return:
+    """
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
 
+
 @app.route('/chat', methods=['POST'])
 def chat():
+    """
+    :return:
+    """
     data = request.get_json()
     if not data or 'message' not in data:
         return jsonify({'error': 'Invalid request: message field is required'}), 400
@@ -23,10 +32,15 @@ def chat():
     chatbot_response = generate_response(user_message, context)
     return jsonify({'response': chatbot_response})
 
+
 def generate_response(user_message, context):
+    """
+    :param user_message:
+    :param context:
+    :return:
+    """
     try:
         user_message_with_context = user_message + "\n" + context
-
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
@@ -38,12 +52,15 @@ def generate_response(user_message, context):
             ],
             max_tokens=150,
             temperature=0.5,
+            language="en",
+            best_of=1,
             stop=None
         )
         chatbot_response = response.choices[0].message.content.strip()
         return chatbot_response
     except Exception as e:
         return str(e)
+
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
