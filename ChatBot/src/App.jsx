@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import pdfToText from 'react-pdftotext';
 import './App.css';
 
-// Function to convert audio blob to base64 encoded string
 const audioBlobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -27,6 +27,7 @@ function App() {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState('');
+  const [pdfText, setPdfText] = useState('');
 
   useEffect(() => {
     return () => {
@@ -55,7 +56,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: input, context: pdfText }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -127,6 +128,17 @@ function App() {
     }
   };
 
+  const extractText = async (event) => {
+    const file = event.target.files[0];
+    try {
+      const text = await pdfToText(file);
+      setPdfText(text);
+      alert('Text extracted successfully');
+    } catch (error) {
+      console.error('Failed to extract text from PDF', error);
+    }
+  };
+
   return (
     <div className="App">
       <h1>Chatbot</h1>
@@ -153,6 +165,15 @@ function App() {
           <button onClick={stopRecording}>Stop Recording</button>
         )}
         <p>Transcription: {transcription}</p>
+      </div>
+
+      <div className="pdf-to-text">
+        <h1>PDF to Text</h1>
+        <input type="file" accept="application/pdf" onChange={extractText} />
+        <div className="extracted-text">
+          <h2>Extracted Text</h2>
+          <pre>{pdfText}</pre>
+        </div>
       </div>
     </div>
   );
