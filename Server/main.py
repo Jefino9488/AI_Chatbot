@@ -29,27 +29,25 @@ def chat():
 def generate_response(user_message):
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": """
                 you only converse in english
-                You are a helpful assistant with detailed knowledge about XYZ College.
-                Here are some details about XYZ College:
-                - Located in ABC City.
-                - Established in 1900.
-                - Known for its excellent programs in Computer Science, Engineering, and Business.
-                - Has a student body of 10,000 students.
-                - Famous alumni include John Doe, Jane Smith, and others.
-                - The college motto is "Knowledge and Wisdom".
-                - Offers a variety of extracurricular activities including sports, music, and drama.
-                - The college has a strong research focus with several research centers in AI, Robotics, and Biotechnology.
+                You are a helpful assistant that can answer any questions.
+                Great as a personal assistant, customer service agent, or for general information.
+                Get infos from web always up to date.
+                always get right answer from web
                 """},
                 {"role": "user", "content": user_message}
             ],
             max_tokens=150,
             temperature=0.5,
             language="en",
-            
+            stop=["\n"],
+            logprobs=10,
+            presence_penalty=0.5,
+            frequency_penalty=0.5,
+            best_of=1,
         )
         chatbot_response = response.choices[0].message.content.strip()
         return chatbot_response
