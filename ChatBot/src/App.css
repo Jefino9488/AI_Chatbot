@@ -1,4 +1,3 @@
-
 .App {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -33,7 +32,7 @@
 }
 
 input[type="text"] {
-    width: calc(30% - 20px);
+    width: calc(70% - 20px); /* Adjusted to fit better with button */
     padding: 10px;
     border: 1px solid #ccc;
     margin-right: 10px;
@@ -58,12 +57,14 @@ button:hover {
 .speech-to-text, .pdf-to-text {
     margin: 20px auto;
 }
+
 .pdf-to-text {
     align-content: center;
     justify-content: center;
     text-align: center;
     width: 60%;
 }
+
 h1 {
     margin-bottom: 10px;
 }

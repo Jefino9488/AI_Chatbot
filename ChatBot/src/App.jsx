@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import pdfToText from 'react-pdftotext';
+import ReactMarkdown from 'react-markdown';
 import './App.css';
 
 const audioBlobToBase64 = (blob) => {
@@ -145,7 +146,7 @@ function App() {
       <div className="chat-window">
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.from}`}>
-            {msg.text}
+            <ReactMarkdown>{msg.text}</ReactMarkdown>
           </div>
         ))}
       </div>
