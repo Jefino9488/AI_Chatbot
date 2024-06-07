@@ -31,7 +31,7 @@ def chat():
     user_message = data['message']
     context = data.get('context', '')
 
-    chatbot_response = Gemini_response(user_message)
+    chatbot_response = generate_response(user_message, context)
     return jsonify({'response': chatbot_response})
 
 def Gemini_response(user_message):
@@ -53,11 +53,15 @@ def generate_response(user_message, context):
     :return:
     """
     try:
+        user_message_with_context = user_message + "\n" + context
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": context},
-                {"role": "user", "content": user_message}
+                {"role": "system", "content": """
+                You are a helpful assistant that can answer any questions.
+                Use the provided context to give accurate answers.
+                """},
+                {"role": "user", "content": user_message_with_context}
             ],
             max_tokens=150,
             temperature=0.5,
