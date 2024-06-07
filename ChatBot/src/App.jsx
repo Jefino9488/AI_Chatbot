@@ -24,6 +24,15 @@ const audioBlobToBase64 = (blob) => {
   });
 };
 
+const AVAILABLE_MODELS = [
+  'models/chat-bison-001', 'models/text-bison-001', 'models/embedding-gecko-001',
+  'models/gemini-1.0-pro', 'models/gemini-1.0-pro-001', 'models/gemini-1.0-pro-latest',
+  'models/gemini-1.0-pro-vision-latest', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-001',
+  'models/gemini-1.5-flash-latest', 'models/gemini-1.5-pro', 'models/gemini-1.5-pro-001',
+  'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision',
+  'models/embedding-001', 'models/text-embedding-004', 'models/aqa'
+];
+
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -31,6 +40,7 @@ function App() {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState("");
   const [pdfText, setPdfText] = useState("");
+  const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0]);
   const msgRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -52,6 +62,10 @@ function App() {
     setInput(e.target.value);
   };
 
+  const handleModelChange = (e) => {
+    setSelectedModel(e.target.value);
+  };
+
   const handleSendMessage = async () => {
     if (input.trim() === "") return;
 
@@ -65,7 +79,7 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input, context: pdfText }),
+        body: JSON.stringify({ message: input, context: pdfText, model: selectedModel }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -155,6 +169,11 @@ function App() {
     }
   };
 
+  const clearPdfText = () => {
+    setPdfText("");
+    fileInputRef.current.value = "";
+  };
+
   return (
     <div className="App">
       <div className="one_p">
@@ -175,33 +194,36 @@ function App() {
             <div className="parent_prompt">
               <div className="prompt">
                 <input
-                    type="text"
-                    className="msg"
-                    value={input}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
+                  type="text"
+                  className="msg"
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                 />
                 <button onClick={handleSendMessage} className="btn_send">
-                  <IoMdSend/>
+                  <IoMdSend />
                 </button>
+                <select value={selectedModel} onChange={handleModelChange} className="model_select">
+                  {AVAILABLE_MODELS.map((model) => (
+                    <option key={model} value={model}>
+                      {model}
+                    </option>
+                  ))}
+                </select>
               </div>
               <button
-                  onClick={recording ? stopRecording : startRecording}
-                  className="btn_record"
+                onClick={recording ? stopRecording : startRecording}
+                className="btn_record"
               >
                 {recording ? "Stop" : "Start"}
-                <BsFillRecord2Fill/>
+                <BsFillRecord2Fill />
               </button>
-
-
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="vertical-line"></div>
-
-      <div className="pdf-to-text">
-        <div className="title">
+        <div className="vertical-line"></div>
+        <div className="pdf-to-text">
+          <div className="title">
             <h2>PDF Context Loader</h2>
           </div>
           <input
@@ -215,6 +237,9 @@ function App() {
             <h2 className="self_center">Extracted Text</h2>
             <pre>{pdfText}</pre>
           </div>
+          <button onClick={clearPdfText} className="clear_btn">
+            Clear
+          </button>
         </div>
       </div>
     </div>
