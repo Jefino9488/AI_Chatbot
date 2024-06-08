@@ -24,7 +24,7 @@ This project implements an AI chatbot that can converse with users, generate ima
 
 ## Tech Stack
 
-- **Frontend**: React.js
+- **Frontend**: Vite + React.js
 - **Backend**: Flask
 - **APIs**:
   - Google Generative AI (Gemini models)
@@ -37,8 +37,8 @@ This project implements an AI chatbot that can converse with users, generate ima
 
 - Node.js and npm
 - Python and pip
-- Google Cloud API key
-- Monster API key
+- Google Gemini Key [Gemini](https://aistudio.google.com/app/apikey)
+- Monster API key [Monster](https://monsterapi.ai/user/dashboard)
 
 ### Frontend Setup
 
