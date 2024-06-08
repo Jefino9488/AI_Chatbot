@@ -1,7 +1,5 @@
 # AI-`ChatBot`
 
----
-
 # AI Chatbot with PDF Context Loader
 
 This project implements an AI chatbot that can converse with users, generate images based on prompts, and extract text from PDF files to use as context for chat interactions. It uses the Gemini models for generating responses and the Monster API for image generation.
@@ -12,6 +10,17 @@ This project implements an AI chatbot that can converse with users, generate ima
 - **Voice Input**: Record and transcribe voice messages to interact with the AI.
 - **Image Generation**: Generate images based on text prompts.
 - **PDF Context Loader**: Upload PDF files, extract text, and use it as context for chat interactions.
+
+## UI Screenshots
+
+### Chatbot Interface
+![Chatbot Interface](images/chatbot_interface.png)
+
+### Image Generation
+![Image Generation](images/image_generation.png)
+
+### PDF Context Loader
+![PDF Context Loader](images/pdf_context_loader.png)
 
 ## Tech Stack
 
@@ -156,6 +165,41 @@ AI_Chatbot/
   "response": "Chatbot's response"
 }
 ```
+
+### /generate
+
+**Method**: POST
+
+**Description**: Generate an image based on a text prompt.
+
+**Request Body**:
+
+```json
+{
+  "prompt": "Your prompt here",
+  "model": "Selected model name here",
+  "style": "Optional style here",
+  "seed": "Optional seed here",
+  "..." : "Other optional parameters"
+}
+```
+
+**Response**:
+
+```json
+{
+  "Output": "Image URL"
+}
+```
+
+### Future Improvements
+
+- Add more features to the chatbot, such as image recognition and text-to-speech.
+- Implement more advanced AI models for generating responses and images.
+- Improve the UI/UX of the application.
+- Add user authentication and data persistence.
+- Optimize the backend server for better performance.
+- etc.
 
 ## Contribution
 
