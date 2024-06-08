@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import pdfToText from "react-pdftotext";
-import { IoMdSend } from "react-icons/io";
+import {IoMdMicOff, IoMdSend} from "react-icons/io";
 import ReactMarkdown from "react-markdown";
 import { BsFillRecord2Fill } from "react-icons/bs";
 import MonsterApiClient from "monsterapi";
 import "./App.css";
+import {MdAttachFile} from "react-icons/md";
 
 const audioBlobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
@@ -218,52 +219,56 @@ function App() {
           <div className="parent_chat">
             <div className="chat-window">
               {messages.map((msg, index) => (
-                <div key={index} className={`message ${msg.from}`} ref={msgRef}>
-                  <p className="txt">
-                    <ReactMarkdown>{msg.text}</ReactMarkdown>
-                  </p>
-                </div>
+                  <div key={index} className={`message ${msg.from}`} ref={msgRef}>
+                    <p className="txt">
+                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                    </p>
+                  </div>
               ))}
             </div>
+            {/*<select value={selectedModel} onChange={handleModelChange} className="model_select">*/}
+            {/*  {AVAILABLE_MODELS.map((model) => (*/}
+            {/*      <option key={model} value={model}>*/}
+            {/*        {model}*/}
+            {/*      </option>*/}
+            {/*  ))}*/}
+            {/*</select>*/}
             <div className="parent_prompt">
+              <button onClick={handleSendMessage} className="btn_attach">
+                <MdAttachFile/>
+              </button>
               <div className="prompt">
+
                 <input
-                  type="text"
-                  className="msg"
-                  value={input}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
+                    type="text"
+                    className="msg"
+                    value={input}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
                 />
-                <button onClick={handleSendMessage} className="btn_send">
-                  <IoMdSend />
-                </button>
-                <select value={selectedModel} onChange={handleModelChange} className="model_select">
-                  {AVAILABLE_MODELS.map((model) => (
-                    <option key={model} value={model}>
-                      {model}
-                    </option>
-                  ))}
-                </select>
               </div>
               <button
-                onClick={recording ? stopRecording : startRecording}
-                className="btn_record"
+                  onClick={recording ? stopRecording : startRecording}
+                  className="btn_record"
               >
-                {recording ? "Stop" : "Start"}
-                <BsFillRecord2Fill />
+                {recording ? <IoMdMicOff/> : <BsFillRecord2Fill/>}
+              </button>
+              <br/>
+              <button onClick={handleSendMessage} className="btn_send">
+                <IoMdSend/>
               </button>
             </div>
           </div>
         </div>
         <div className="vertical-line"></div>
         <div className="pdf-to-text">
-          <div className="title">
+        <div className="title">
             <h2>PDF Context Loader</h2>
           </div>
           <input
-            type="file"
-            className="self_center choose_btn"
-            accept="application/pdf"
+              type="file"
+              className="self_center choose_btn"
+              accept="application/pdf"
             onChange={extractText}
             ref={fileInputRef}
           />

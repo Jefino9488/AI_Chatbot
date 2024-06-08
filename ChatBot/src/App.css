@@ -78,7 +78,6 @@
 }
 
 .message {
-  padding: 1px;
   margin: 0.5rem 0;
   border-radius: 10px;
   display: inline-block;
@@ -109,7 +108,7 @@
 }
 
 .prompt {
-  width: 250%;
+  width: 200%;
   align-self: center;
   border-radius: 11px;
 }
@@ -119,8 +118,7 @@
   width: 80%;
   padding: 10px;
   border: 1px solid #ccc;
-  margin-bottom: 10px;
-  margin-left: 1rem;
+  margin-bottom: 10px
 }
 
 .parent_prompt {
@@ -135,10 +133,16 @@
 }
 
 .btn_send {
-  height: 2rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  height: 4rem;
+  width: 6rem;
   transform: translateX(-40px);
   background: none;
+  display: flex;
+  font-size: 1.8rem;
+  justify-content: center;
+  align-items: center;
+  margin-left: 2rem;
   border: none;
 }
 
@@ -168,7 +172,6 @@
 .choose_btn {
   margin-bottom: 2rem;
 }
-
 .choose_btn::-webkit-file-upload-button {
   background-color: black;
   color: white;
@@ -177,6 +180,27 @@
   margin: 1rem;
   border-radius: 5px;
 }
+/* Styling for the attachment button */
+.btn_attach {
+  margin-bottom: 0.7rem;
+  margin-left: 2rem;
+  background-color: #4CAF50; /* Green background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 5px; /* Padding */
+  display: flex; /* Center items */
+  font-size: 1.5rem; /* Icon size */
+  cursor: pointer; /* Pointer/hand icon on hover */
+  border-radius: 50%; /* Rounded shape */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.btn_attach:hover {
+  background-color: #45a049; /* Darker green background on hover */
+}
+
 
 .choose_btn::-webkit-file-upload-button:hover {
   background-color: #4caf50;
