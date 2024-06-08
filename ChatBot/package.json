@@ -13,6 +13,7 @@
     "@babel/runtime": "^7.24.6",
     "assemblyai": "^4.4.5",
     "axios": "^1.7.2",
+    "monsterapi": "^0.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",

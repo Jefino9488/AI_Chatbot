@@ -4,6 +4,7 @@ import pdfToText from "react-pdftotext";
 import { IoMdSend } from "react-icons/io";
 import ReactMarkdown from "react-markdown";
 import { BsFillRecord2Fill } from "react-icons/bs";
+import MonsterApiClient from "monsterapi";
 import "./App.css";
 
 const audioBlobToBase64 = (blob) => {
@@ -25,13 +26,14 @@ const audioBlobToBase64 = (blob) => {
 };
 
 const AVAILABLE_MODELS = [
-  'models/chat-bison-001', 'models/text-bison-001', 'models/embedding-gecko-001',
   'models/gemini-1.0-pro', 'models/gemini-1.0-pro-001', 'models/gemini-1.0-pro-latest',
   'models/gemini-1.0-pro-vision-latest', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-001',
   'models/gemini-1.5-flash-latest', 'models/gemini-1.5-pro', 'models/gemini-1.5-pro-001',
-  'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision',
-  'models/embedding-001', 'models/text-embedding-004', 'models/aqa'
+  'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision'
 ];
+
+const MONSTER_API_KEY = import.meta.env.VITE_MONSTER_API_KEY;
+const monsterClient = new MonsterApiClient(MONSTER_API_KEY);
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -41,6 +43,7 @@ function App() {
   const [transcription, setTranscription] = useState("");
   const [pdfText, setPdfText] = useState("");
   const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0]);
+  const [generatedImage, setGeneratedImage] = useState(null);
   const msgRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -73,6 +76,11 @@ function App() {
     setMessages([...messages, userMessage]);
     setInput("");
 
+    if (input.toLowerCase().startsWith("generate")) {
+      handleGenerateImage(input);
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:8000/chat", {
         method: "POST",
@@ -90,6 +98,33 @@ function App() {
     } catch (error) {
       console.error(error);
       alert("An error occurred. Please try again.");
+    }
+  };
+
+  const handleGenerateImage = async (prompt) => {
+    const model = "txt2img";
+    const input = { prompt: prompt.replace("generate", "").trim()};
+
+    console.log("Generating image with prompt:", input);
+
+    try {
+        const response = await monsterClient.generate(model, input);
+        console.log("MonsterAPI response:", response);
+
+        // Check if the response contains the image URL
+        if (response.output && response.output.length > 0) {
+            const imageUrl = response.output[0];
+            setGeneratedImage(imageUrl);
+            const botMessage = { from: "bot", text: `![Generated Image](${imageUrl})` };
+            setMessages((prevMessages) => [...prevMessages, botMessage]);
+        } else {
+            console.error("Image generation failed:", response);
+            const botMessage = { from: "bot", text: "Failed to generate image. Please try again." };
+            setMessages((prevMessages) => [...prevMessages, botMessage]);
+        }
+    } catch (error) {
+        console.error("Error generating image:", error);
+        alert("Failed to generate image. Please try again.");
     }
   };
 
@@ -162,7 +197,6 @@ function App() {
       const text = await pdfToText(file);
       setPdfText(text);
       alert("Text extracted successfully");
-      // Clear the input field
       fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to extract text from PDF", error);

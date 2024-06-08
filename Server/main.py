@@ -7,13 +7,12 @@ app = Flask(__name__)
 load_dotenv()
 
 AVAILABLE_MODELS = [
-    'models/chat-bison-001', 'models/text-bison-001', 'models/embedding-gecko-001',
     'models/gemini-1.0-pro', 'models/gemini-1.0-pro-001', 'models/gemini-1.0-pro-latest',
     'models/gemini-1.0-pro-vision-latest', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-001',
     'models/gemini-1.5-flash-latest', 'models/gemini-1.5-pro', 'models/gemini-1.5-pro-001',
-    'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision',
-    'models/embedding-001', 'models/text-embedding-004', 'models/aqa'
+    'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision'
 ]
+
 
 @app.after_request
 def add_cors_headers(response):
@@ -21,6 +20,7 @@ def add_cors_headers(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
+
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -35,6 +35,7 @@ def chat():
     chatbot_response = Gemini_response(user_message, context, model_name)
     return jsonify({'response': chatbot_response})
 
+
 def Gemini_response(user_message, context, model_name):
     try:
         api_key = os.getenv('API_KEY')
@@ -47,6 +48,7 @@ def Gemini_response(user_message, context, model_name):
         return chatbot_response
     except Exception as e:
         return str(e)
+
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
