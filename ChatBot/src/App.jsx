@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import pdfToText from "react-pdftotext";
-import {IoMdMicOff, IoMdSend} from "react-icons/io";
+import { IoMdMicOff, IoMdSend } from "react-icons/io";
 import ReactMarkdown from "react-markdown";
 import { BsFillRecord2Fill } from "react-icons/bs";
 import MonsterApiClient from "monsterapi";
 import "./App.css";
-import {MdAttachFile} from "react-icons/md";
+import { MdAttachFile } from "react-icons/md";
 
 const audioBlobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
@@ -96,6 +96,7 @@ function App() {
       }
       const botMessage = { from: "bot", text: data.response };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
+      speakText(data.response);
     } catch (error) {
       console.error(error);
       alert("An error occurred. Please try again.");
@@ -104,28 +105,30 @@ function App() {
 
   const handleGenerateImage = async (prompt) => {
     const model = "txt2img";
-    const input = { prompt: prompt.replace("generate", "").trim()};
+    const input = { prompt: prompt.replace("generate", "").trim() };
 
     console.log("Generating image with prompt:", input);
 
     try {
-        const response = await monsterClient.generate(model, input);
-        console.log("MonsterAPI response:", response);
+      const response = await monsterClient.generate(model, input);
+      console.log("MonsterAPI response:", response);
 
-        // Check if the response contains the image URL
-        if (response.output && response.output.length > 0) {
-            const imageUrl = response.output[0];
-            setGeneratedImage(imageUrl);
-            const botMessage = { from: "bot", text: `![Generated Image](${imageUrl})` };
-            setMessages((prevMessages) => [...prevMessages, botMessage]);
-        } else {
-            console.error("Image generation failed:", response);
-            const botMessage = { from: "bot", text: "Failed to generate image. Please try again." };
-            setMessages((prevMessages) => [...prevMessages, botMessage]);
-        }
+      // Check if the response contains the image URL
+      if (response.output && response.output.length > 0) {
+        const imageUrl = response.output[0];
+        setGeneratedImage(imageUrl);
+        const botMessage = { from: "bot", text: `![Generated Image](${imageUrl})` };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        speakText("Here is the generated image.");
+      } else {
+        console.error("Image generation failed:", response);
+        const botMessage = { from: "bot", text: "Failed to generate image. Please try again." };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        speakText("Failed to generate image. Please try again.");
+      }
     } catch (error) {
-        console.error("Error generating image:", error);
-        alert("Failed to generate image. Please try again.");
+      console.error("Error generating image:", error);
+      alert("Failed to generate image. Please try again.");
     }
   };
 
@@ -209,6 +212,17 @@ function App() {
     fileInputRef.current.value = "";
   };
 
+  // Function to speak text using the Web Speech API
+  const speakText = (text) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.error("Web Speech API is not supported in this browser.");
+    }
+  };
+
   return (
     <div className="App">
       <div className="one_p">
@@ -217,58 +231,58 @@ function App() {
             <h2>AI Chat Bot</h2>
           </div>
           <div className="parent_chat">
+            <select value={selectedModel} onChange={handleModelChange} className="model_select">
+              {AVAILABLE_MODELS.map((model) => (
+                <option key={model} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
             <div className="chat-window">
               {messages.map((msg, index) => (
-                  <div key={index} className={`message ${msg.from}`} ref={msgRef}>
-                    <p className="txt">
-                      <ReactMarkdown>{msg.text}</ReactMarkdown>
-                    </p>
-                  </div>
+                <div key={index} className={`message ${msg.from}`} ref={msgRef}>
+                  <p className="txt">
+                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                  </p>
+                </div>
               ))}
             </div>
-            {/*<select value={selectedModel} onChange={handleModelChange} className="model_select">*/}
-            {/*  {AVAILABLE_MODELS.map((model) => (*/}
-            {/*      <option key={model} value={model}>*/}
-            {/*        {model}*/}
-            {/*      </option>*/}
-            {/*  ))}*/}
-            {/*</select>*/}
             <div className="parent_prompt">
               <button onClick={handleSendMessage} className="btn_attach">
-                <MdAttachFile/>
+                <MdAttachFile />
               </button>
               <div className="prompt">
-
                 <input
-                    type="text"
-                    className="msg"
-                    value={input}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
+                  type="text"
+                  className="msg"
+                  placeholder={`message ${selectedModel}`}
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                 />
               </div>
               <button
-                  onClick={recording ? stopRecording : startRecording}
-                  className="btn_record"
+                onClick={recording ? stopRecording : startRecording}
+                className="btn_record"
               >
-                {recording ? <IoMdMicOff/> : <BsFillRecord2Fill/>}
+                {recording ? <IoMdMicOff /> : <BsFillRecord2Fill />}
               </button>
-              <br/>
+              <br />
               <button onClick={handleSendMessage} className="btn_send">
-                <IoMdSend/>
+                <IoMdSend />
               </button>
             </div>
           </div>
         </div>
         <div className="vertical-line"></div>
         <div className="pdf-to-text">
-        <div className="title">
+          <div className="title">
             <h2>PDF Context Loader</h2>
           </div>
           <input
-              type="file"
-              className="self_center choose_btn"
-              accept="application/pdf"
+            type="file"
+            className="self_center choose_btn"
+            accept="application/pdf"
             onChange={extractText}
             ref={fileInputRef}
           />

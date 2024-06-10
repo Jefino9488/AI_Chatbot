@@ -248,3 +248,18 @@ img {
   object-fit: contain;
   border-radius: 5px;
 }
+
+.model_select {
+    position: absolute;
+    top: 17%;
+    left: 5%;
+    transform: translate(-20%, -50%);
+    max-width: 200px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.73);
+    font-weight: bold;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(30, 30, 30, 0.76);
+    z-index: 1;
+}
