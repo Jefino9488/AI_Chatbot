@@ -1,16 +1,14 @@
 import os
-from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import google.generativeai as genai
 from werkzeug.utils import secure_filename
 import PIL.Image
 
 app = Flask(__name__)
-load_dotenv()
 
 AVAILABLE_MODELS = [
-    'models/gemini-1.0-pro', 'models/gemini-1.0-pro-001', 'models/gemini-1.0-pro-latest',
-    'models/gemini-1.0-pro-vision-latest', 'models/gemini-1.5-flash', 'models/gemini-1.5-flash-001',
+    'models/gemini-1.5-flash','models/gemini-1.0-pro', 'models/gemini-1.0-pro-001', 'models/gemini-1.0-pro-latest',
+    'models/gemini-1.0-pro-vision-latest', 'models/gemini-1.5-flash-001',
     'models/gemini-1.5-flash-latest', 'models/gemini-1.5-pro', 'models/gemini-1.5-pro-001',
     'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision'
 ]
@@ -49,7 +47,7 @@ def chat():
 
 def Gemini_response(user_message, context, model_name, image_path=None):
     try:
-        api_key = os.getenv('API_KEY')
+        api_key = "AIzaSyAFk1M9RrESliravXpQ2Nm-KQ4O1gsk_IU"
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(model_name)
         chat = model.start_chat(history=[])
