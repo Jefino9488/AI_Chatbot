@@ -45,8 +45,10 @@ function App() {
   const [pdfText, setPdfText] = useState("");
   const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0]);
   const [generatedImage, setGeneratedImage] = useState(null);
+  const [file, setFile] = useState(null);
   const msgRef = useRef(null);
-  const fileInputRef = useRef(null);
+  const pdfFileInputRef = useRef(null);
+  const imageFileInputRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -71,37 +73,44 @@ function App() {
   };
 
   const handleSendMessage = async () => {
-    if (input.trim() === "") return;
+    if (input.trim() === "" && !file) return;
 
-    const userMessage = { from: "user", text: input };
+    const userMessage = { from: "user", text: input, image: file ? URL.createObjectURL(file) : null };
     setMessages([...messages, userMessage]);
     setInput("");
+    setFile(null);
 
     if (input.toLowerCase().startsWith("generate")) {
-      handleGenerateImage(input);
+      await handleGenerateImage(input);
       return;
     }
 
+    const formData = new FormData();
+    formData.append("message", input);
+    formData.append("context", pdfText);
+    formData.append("model", selectedModel);
+    if (file) {
+        formData.append("file", file);
+    }
+
     try {
-      const response = await fetch("http://localhost:8000/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message: input, context: pdfText, model: selectedModel }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "An error occurred");
-      }
-      const botMessage = { from: "bot", text: data.response };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-      speakText(data.response);
+        const response = await fetch("http://localhost:8000/chat", {
+            method: "POST",
+            body: formData,
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || "An error occurred");
+        }
+        const botMessage = { from: "bot", text: data.response, image: data.image_url };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        speakText(data.response);
     } catch (error) {
-      console.error(error);
-      alert("An error occurred. Please try again.");
+        console.error(error);
+        alert("An error occurred. Please try again.");
     }
   };
+
 
   const handleGenerateImage = async (prompt) => {
     const model = "txt2img";
@@ -201,7 +210,7 @@ function App() {
       const text = await pdfToText(file);
       setPdfText(text);
       alert("Text extracted successfully");
-      fileInputRef.current.value = "";
+      pdfFileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to extract text from PDF", error);
     }
@@ -209,7 +218,7 @@ function App() {
 
   const clearPdfText = () => {
     setPdfText("");
-    fileInputRef.current.value = "";
+    pdfFileInputRef.current.value = "";
   };
 
   // Function to speak text using the Web Speech API
@@ -233,43 +242,51 @@ function App() {
           <div className="parent_chat">
             <select value={selectedModel} onChange={handleModelChange} className="model_select">
               {AVAILABLE_MODELS.map((model) => (
-                <option key={model} value={model}>
-                  {model}
-                </option>
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
               ))}
             </select>
             <div className="chat-window">
               {messages.map((msg, index) => (
-                <div key={index} className={`message ${msg.from}`} ref={msgRef}>
-                  <p className="txt">
-                    <ReactMarkdown>{msg.text}</ReactMarkdown>
-                  </p>
-                </div>
+                  <div key={index} className={`message ${msg.from}`} ref={msgRef}>
+                    <p className="txt">
+                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                      {msg.from === 'user' && msg.image && <img src={msg.image} alt="attached" style={{ maxWidth: "100%" }} />}
+                    </p>
+                  </div>
               ))}
             </div>
             <div className="parent_prompt">
-              <button onClick={handleSendMessage} className="btn_attach">
-                <MdAttachFile />
+              <button onClick={() => imageFileInputRef.current.click()} className="btn_attach">
+                <MdAttachFile/>
               </button>
+              <input
+                  type="file"
+                  style={{display: "none"}}
+                  accept="image/*"
+                  ref={imageFileInputRef}
+                  onChange={(e) => setFile(e.target.files[0])}
+              />
               <div className="prompt">
                 <input
-                  type="text"
-                  className="msg"
-                  placeholder={`message ${selectedModel}`}
-                  value={input}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
+                    type="text"
+                    className="msg"
+                    placeholder={`message ${selectedModel}`}
+                    value={input}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
                 />
               </div>
               <button
-                onClick={recording ? stopRecording : startRecording}
-                className="btn_record"
+                  onClick={recording ? stopRecording : startRecording}
+                  className="btn_record"
               >
-                {recording ? <IoMdMicOff /> : <BsFillRecord2Fill />}
+                {recording ? <IoMdMicOff/> : <BsFillRecord2Fill/>}
               </button>
-              <br />
+              <br/>
               <button onClick={handleSendMessage} className="btn_send">
-                <IoMdSend />
+                <IoMdSend/>
               </button>
             </div>
           </div>
@@ -280,11 +297,11 @@ function App() {
             <h2>PDF Context Loader</h2>
           </div>
           <input
-            type="file"
-            className="self_center choose_btn"
-            accept="application/pdf"
-            onChange={extractText}
-            ref={fileInputRef}
+              type="file"
+              className="self_center choose_btn"
+              accept="application/pdf"
+              onChange={extractText}
+            ref={pdfFileInputRef}
           />
           <div className="extracted-text">
             <h2 className="self_center">Extracted Text</h2>

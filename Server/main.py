@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import google.generativeai as genai
+from werkzeug.utils import secure_filename
+import PIL.Image
 
 app = Flask(__name__)
 load_dotenv()
@@ -13,6 +15,8 @@ AVAILABLE_MODELS = [
     'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision'
 ]
 
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.after_request
 def add_cors_headers(response):
@@ -24,31 +28,47 @@ def add_cors_headers(response):
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    data = request.get_json()
+    data = request.form
+    file = request.files.get('file')
     if not data or 'message' not in data or 'model' not in data:
         return jsonify({'error': 'Invalid request: message and model fields are required'}), 400
-
     user_message = data['message']
     context = data.get('context', '')
     model_name = data['model']
 
-    chatbot_response = Gemini_response(user_message, context, model_name)
-    return jsonify({'response': chatbot_response})
+    image_path = None
+    if file:
+        filename = secure_filename(file.filename)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(image_path)
+
+    chatbot_response, image_path = Gemini_response(user_message, context, model_name, image_path)
+
+    return jsonify({'response': chatbot_response, 'image_url': image_path if image_path else ''})
 
 
-def Gemini_response(user_message, context, model_name):
+def Gemini_response(user_message, context, model_name, image_path=None):
     try:
         api_key = os.getenv('API_KEY')
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(model_name)
         chat = model.start_chat(history=[])
+
+        if image_path:
+            img = PIL.Image.open(image_path)
+            inputs = [user_message , img]
+            response = model.generate_content(inputs, stream=False)
+            chatbot_response = response.text
+            return chatbot_response, image_path  # Return the image path
         user_message_with_context = user_message + "\n" + context
         response = chat.send_message(user_message_with_context, stream=False)
         chatbot_response = response.text
-        return chatbot_response
+        return chatbot_response, None  # No image path
     except Exception as e:
-        return str(e)
+        return str(e), None
 
 
 if __name__ == '__main__':
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
     app.run(port=8000, debug=True)
