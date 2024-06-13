@@ -3,5 +3,8 @@
   <component name="Black">
     <option name="sdkName" value="Voice-Recorder" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (AI_Chatbot)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (AI_Chatbot)" project-jdk-type="Python SDK" />
+  <component name="PyCharmProfessionalAdvertiser">
+    <option name="shown" value="true" />
+  </component>
 </project>
