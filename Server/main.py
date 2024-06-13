@@ -1,9 +1,10 @@
 import os
 from flask import Flask, request, jsonify
 import google.generativeai as genai
+from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 import PIL.Image
-
+load_dotenv()
 app = Flask(__name__)
 
 AVAILABLE_MODELS = [
@@ -47,7 +48,7 @@ def chat():
 
 def Gemini_response(user_message, context, model_name, image_path=None):
     try:
-        api_key = "AIzaSyAFk1M9RrESliravXpQ2Nm-KQ4O1gsk_IU"
+        api_key = os.getenv('API_KEY')
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(model_name)
         chat = model.start_chat(history=[])
