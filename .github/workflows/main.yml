@@ -30,6 +30,6 @@ jobs:
           ECR_REPOSITORY: chatbot
           IMAGE_TAG: Latest
         run: |
-          cd /AI_Chatbot/Server
+          cd Server
           docker build -t 905418454708.dkr.ecr.us-east-1.amazonaws.com/chatbot:Latest .
           docker push 905418454708.dkr.ecr.us-east-1.amazonaws.com/chatbot:Latest
