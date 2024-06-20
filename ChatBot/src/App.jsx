@@ -33,9 +33,6 @@ const AVAILABLE_MODELS = [
   'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision'
 ];
 
-const MONSTER_API_KEY = import.meta.env.VITE_MONSTER_API_KEY;
-const monsterClient = new MonsterApiClient(MONSTER_API_KEY);
-
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -46,6 +43,10 @@ function App() {
   const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0]);
   const [generatedImage, setGeneratedImage] = useState(null);
   const [file, setFile] = useState(null);
+  const [apiKeyFormVisible, setApiKeyFormVisible] = useState(false);
+  const [geminiApiKey, setGeminiApiKey] = useState("");
+  const [monsterApiKey, setMonsterApiKey] = useState("");
+  const [googleApiKey, setGoogleApiKey] = useState("");
   const msgRef = useRef(null);
   const pdfFileInputRef = useRef(null);
   const imageFileInputRef = useRef(null);
@@ -61,8 +62,6 @@ function App() {
   useEffect(() => {
     msgRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
-
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -89,6 +88,7 @@ function App() {
     formData.append("message", input);
     formData.append("context", pdfText);
     formData.append("model", selectedModel);
+    formData.append("geminiApiKey", geminiApiKey);
     if (file) {
         formData.append("file", file);
     }
@@ -111,10 +111,10 @@ function App() {
     }
   };
 
-
   const handleGenerateImage = async (prompt) => {
     const model = "txt2img";
     const input = { prompt: prompt.replace("generate", "").trim() };
+    const monsterClient = new MonsterApiClient(monsterApiKey);
 
     console.log("Generating image with prompt:", input);
 
@@ -122,7 +122,6 @@ function App() {
       const response = await monsterClient.generate(model, input);
       console.log("MonsterAPI response:", response);
 
-      // Check if the response contains the image URL
       if (response.output && response.output.length > 0) {
         const imageUrl = response.output[0];
         setGeneratedImage(imageUrl);
@@ -148,52 +147,58 @@ function App() {
   };
 
   const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      recorder.start();
-      console.log("Recording started");
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const recorder = new MediaRecorder(stream);
+    recorder.start();
+    console.log("Recording started");
 
-      recorder.addEventListener("dataavailable", async (event) => {
-        const audioBlob = event.data;
-        const base64Audio = await audioBlobToBase64(audioBlob);
+    recorder.addEventListener("dataavailable", async (event) => {
+      const audioBlob = event.data;
+      console.log("Audio blob:", audioBlob);
 
-        try {
-          const response = await axios.post(
-            `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`,
-            {
-              config: {
-                encoding: "WEBM_OPUS",
-                sampleRateHertz: 48000,
-                languageCode: "en-US",
-              },
-              audio: {
-                content: base64Audio,
-              },
-            }
-          );
+      const base64Audio = await audioBlobToBase64(audioBlob);
+      console.log("Base64 audio:", base64Audio);
 
-          if (response.data.results && response.data.results.length > 0) {
-            setTranscription(
-              response.data.results[0].alternatives[0].transcript
-            );
-            setInput(response.data.results[0].alternatives[0].transcript);
-          } else {
-            setTranscription("No transcription available");
+      console.log("Audio blob size:", audioBlob.size);
+      console.log("Audio blob type:", audioBlob.type);
+
+      try {
+        const response = await axios.post(
+          `https://speech.googleapis.com/v1/speech:recognize?key=${googleApiKey}`,
+          {
+            config: {
+              encoding: "WEBM_OPUS",
+              sampleRateHertz: 48000,
+              languageCode: "en-US",
+            },
+            audio: {
+              content: base64Audio,
+            },
           }
-        } catch (error) {
-          console.error(
-            "Error with Google Speech-to-Text API:",
-            error.response.data
-          );
-        }
-      });
+        );
 
-      setRecording(true);
-      setMediaRecorder(recorder);
-    } catch (error) {
-      console.error("Error getting user media:", error);
-    }
+        console.log("Google Speech-to-Text API response:", response.data);
+
+        if (response.data.results && response.data.results.length > 0) {
+          const transcript = response.data.results[0].alternatives[0].transcript;
+          console.log("Transcript:", transcript);
+          setTranscription(transcript);
+          setInput(transcript);
+        } else {
+          setTranscription("No transcription available");
+          console.log("No transcription available");
+        }
+      } catch (error) {
+        console.error("Error with Google Speech-to-Text API:", error.response?.data || error.message);
+      }
+    });
+
+    setRecording(true);
+    setMediaRecorder(recorder);
+  } catch (error) {
+    console.error("Error getting user media:", error);
+  }
   };
 
   const stopRecording = () => {
@@ -221,7 +226,6 @@ function App() {
     pdfFileInputRef.current.value = "";
   };
 
-  // Function to speak text using the Web Speech API
   const speakText = (text) => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -230,6 +234,11 @@ function App() {
     } else {
       console.error("Web Speech API is not supported in this browser.");
     }
+  };
+
+  const handleSubmitApiKeys = (e) => {
+    e.preventDefault();
+    setApiKeyFormVisible(false);
   };
 
   return (
@@ -258,6 +267,7 @@ function App() {
               ))}
             </div>
             <div className="parent_prompt">
+              <button onClick={() => setApiKeyFormVisible(true)} className="cred">APIS</button>
               <button onClick={() => imageFileInputRef.current.click()} className="btn_attach">
                 <MdAttachFile/>
               </button>
@@ -301,7 +311,7 @@ function App() {
               className="self_center choose_btn"
               accept="application/pdf"
               onChange={extractText}
-            ref={pdfFileInputRef}
+              ref={pdfFileInputRef}
           />
           <div className="extracted-text">
             <h2 className="self_center">Extracted Text</h2>
@@ -312,6 +322,40 @@ function App() {
           </button>
         </div>
       </div>
+    {apiKeyFormVisible && (
+      <div className="popup">
+        <div className="popup-inner">
+          <form onSubmit={handleSubmitApiKeys} className="api-key-form">
+            <label>
+              Gemini API Key:
+              <input
+                type="text"
+                value={geminiApiKey}
+                onChange={(e) => setGeminiApiKey(e.target.value)}
+              />
+            </label>
+            <label>
+              Monster API Key:
+              <input
+                type="text"
+                value={monsterApiKey}
+                onChange={(e) => setMonsterApiKey(e.target.value)}
+              />
+            </label>
+            <label>
+              Google API Key:
+              <input
+                type="text"
+                value={googleApiKey}
+                onChange={(e) => setGoogleApiKey(e.target.value)}
+              />
+            </label>
+            <button type="submit" className="api-submit">Submit</button>
+            <button type="button" className="api-close" onClick={() => setApiKeyFormVisible(false)}>Close</button>
+          </form>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

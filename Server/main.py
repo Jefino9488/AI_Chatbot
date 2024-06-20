@@ -4,11 +4,12 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 import PIL.Image
+
 load_dotenv()
 app = Flask(__name__)
 
 AVAILABLE_MODELS = [
-    'models/gemini-1.5-flash','models/gemini-1.0-pro', 'models/gemini-1.0-pro-001', 'models/gemini-1.0-pro-latest',
+    'models/gemini-1.5-flash', 'models/gemini-1.0-pro', 'models/gemini-1.0-pro-001', 'models/gemini-1.0-pro-latest',
     'models/gemini-1.0-pro-vision-latest', 'models/gemini-1.5-flash-001',
     'models/gemini-1.5-flash-latest', 'models/gemini-1.5-pro', 'models/gemini-1.5-pro-001',
     'models/gemini-1.5-pro-latest', 'models/gemini-pro', 'models/gemini-pro-vision'
@@ -16,6 +17,7 @@ AVAILABLE_MODELS = [
 
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.after_request
 def add_cors_headers(response):
@@ -34,6 +36,7 @@ def chat():
     user_message = data['message']
     context = data.get('context', '')
     model_name = data['model']
+    gemini_api_key = data.get('geminiApiKey')
 
     image_path = None
     if file:
@@ -41,28 +44,29 @@ def chat():
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(image_path)
 
-    chatbot_response, image_path = Gemini_response(user_message, context, model_name, image_path)
+    chatbot_response, image_path = Gemini_response(user_message, context, model_name, image_path, gemini_api_key)
 
     return jsonify({'response': chatbot_response, 'image_url': image_path if image_path else ''})
 
 
-def Gemini_response(user_message, context, model_name, image_path=None):
+def Gemini_response(user_message, context, model_name, image_path=None, api_key=None):
     try:
-        api_key = os.getenv('API_KEY')
+        if not api_key:
+            return "API Key is missing", None
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(model_name)
         chat = model.start_chat(history=[])
 
         if image_path:
             img = PIL.Image.open(image_path)
-            inputs = [user_message , img]
+            inputs = [user_message, img]
             response = model.generate_content(inputs, stream=False)
             chatbot_response = response.text
-            return chatbot_response, image_path  # Return the image path
+            return chatbot_response, image_path
         user_message_with_context = user_message + "\n" + context
         response = chat.send_message(user_message_with_context, stream=False)
         chatbot_response = response.text
-        return chatbot_response, None  # No image path
+        return chatbot_response, None
     except Exception as e:
         return str(e), None
 
@@ -70,4 +74,4 @@ def Gemini_response(user_message, context, model_name, image_path=None):
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-    app.run(port=8000, debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)

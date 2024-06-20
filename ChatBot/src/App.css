@@ -82,7 +82,7 @@
   border-radius: 10px;
   display: inline-block;
   max-width: 80%; /* Ensures messages don't take up more than 80% of the container width */
-  min-width: 5%; /* Ensures very short messages have a minimum width */
+  min-width: 1%; /* Ensures very short messages have a minimum width */
   word-wrap: break-word; /* Ensures long words break to the next line */
 }
 
@@ -151,6 +151,7 @@
 }
 
 .btn_record {
+  margin-left: 1rem;
   margin-bottom: 0.6rem;
   background-color: black;
   font-size: 1.7rem;
@@ -183,7 +184,7 @@
 /* Styling for the attachment button */
 .btn_attach {
   margin-bottom: 0.7rem;
-  margin-left: 2rem;
+  margin-left: 1rem;
   background-color: #4CAF50; /* Green background */
   border: none; /* Remove borders */
   color: white; /* White text */
@@ -233,8 +234,6 @@
 }
 
 .generated-image {
-  width: 100%;
-  height: 100%;
   object-fit: contain;
   padding-right: 20px;
   padding-top: 5px;
@@ -243,8 +242,8 @@
 }
 
 img {
-  width: 80%;
-  height: 80%;
+  width: 50%;
+  height: 50%;
   object-fit: contain;
   border-radius: 5px;
 }
@@ -263,3 +262,88 @@ img {
     box-shadow: 0 0 10px rgba(30, 30, 30, 0.76);
     z-index: 1;
 }
+
+/* Popup form styles */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-inner {
+  background: white;
+  padding: 20px;
+  color: black;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.api-key-form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.api-key-form input {
+  width: calc(100% - 20px);
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.api-key-form button {
+  margin-right: 10px;
+}
+
+.cred {
+  margin-bottom: 0.7rem;
+  margin-left: 1.5rem;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 5px;
+  display: flex;
+  cursor: pointer;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.cred:hover {
+  background-color: #45a049;
+}
+
+.api-submit {
+  background-color: black;
+  color: white;
+  padding: 10px;
+  border: 0;
+  margin-top: 1rem;
+  border-radius: 5px;
+}
+
+.api-submit:hover {
+  background-color: #333;
+}
+
+.api-close {
+  background-color: black;
+  color: white;
+  padding: 10px;
+  border: 0;
+  margin-top: 1rem;
+  border-radius: 5px;
+}
+
+.api-close:hover {
+  background-color: #333;
+}
+
