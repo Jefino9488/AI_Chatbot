@@ -108,6 +108,7 @@ AI_Chatbot/
 ├── Server/
 │   ├── venv/
 │   ├── main.py
+│   ├── DOCKERFILE
 │   ├── requirements.txt
 │   └── .env
 ├── Chatbot/
