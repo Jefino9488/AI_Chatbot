@@ -30,7 +30,7 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: |
-          cd Chatbot
+          cd ChatBot
           npm ci
       - name: Build
         run: |
