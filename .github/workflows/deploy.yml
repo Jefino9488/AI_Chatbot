@@ -3,8 +3,6 @@ name: Website Deployment
 on:
   push:
     branches: ['main']
-    paths:
-      - 'Chatbot/src/**'
   workflow_dispatch:
 
 permissions:
@@ -29,6 +27,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node
+        run: |
+          cd Chatbot
         uses: actions/setup-node@v4
         with:
           node-version: 20
