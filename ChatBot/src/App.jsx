@@ -94,7 +94,7 @@ function App() {
     }
 
     try {
-        const response = await fetch("http://ec2-3-87-174-179.compute-1.amazonaws.com:8000/chat", {
+        const response = await fetch("/api/chat", {
             method: "POST",
             body: formData,
         });
