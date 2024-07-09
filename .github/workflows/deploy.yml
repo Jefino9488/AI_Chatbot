@@ -1,0 +1,49 @@
+name: Website Deployment
+
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'Chatbot/src/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+env:
+  VITE_GITHUB_TOKEN: ${{ secrets.VITE_GITHUB_TOKEN }}
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+      - name: Install dependencies
+        run: |
+          cd Chatbot
+          npm ci
+      - name: Build
+        run: |
+          cd Chatbot
+          npm run build
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: Chatbot/dist
