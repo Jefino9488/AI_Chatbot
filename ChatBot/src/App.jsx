@@ -94,7 +94,7 @@ function App() {
     }
 
     try {
-        const response = await fetch("/api/chat", {
+        const response = await fetch("/ChatBot/api/chat", {
             method: "POST",
             body: formData,
         });
