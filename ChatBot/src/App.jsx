@@ -97,6 +97,7 @@ function App() {
         const response = await fetch("http://ec2-3-95-219-188.compute-1.amazonaws.com:8000/chat", {
             method: "POST",
             body: formData,
+            referrerPolicy: "unsafe-url",
         });
         const data = await response.json();
         if (!response.ok) {
