@@ -85,41 +85,31 @@ function App() {
     }
 
     const formData = new FormData();
-      formData.append("message", input);
+    formData.append("message", input);
     formData.append("context", pdfText);
     formData.append("model", selectedModel);
     formData.append("geminiApiKey", geminiApiKey);
     if (file) {
-      formData.append("file", file);
+        formData.append("file", file);
     }
 
     try {
-      const response = await fetch("/api/proxy", {
-        method: "POST",
-        body: formData,
-      });
-
-      const contentType = response.headers.get('content-type');
-      let data;
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        data = await response.text();
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || "An error occurred");
-      }
-
-      const botMessage = { from: "bot", text: data.response, image: data.image_url };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-      speakText(data.response);
+        const response = await fetch("http://ec2-3-95-219-188.compute-1.amazonaws.com:8000/chat", {
+            method: "POST",
+            body: formData,
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || "An error occurred");
+        }
+        const botMessage = { from: "bot", text: data.response, image: data.image_url };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        speakText(data.response);
     } catch (error) {
-      console.error(error);
-      alert("An error occurred. Please try again.");
+        console.error(error);
+        alert("An error occurred. Please try again.");
     }
   };
-
 
   const handleGenerateImage = async (prompt) => {
     const model = "txt2img";
