@@ -94,7 +94,7 @@ function App() {
     }
 
     try {
-        const response = await fetch("/api/chat", {
+        const response = await fetch("/api/proxy", {
             method: "POST",
             body: formData,
         });
