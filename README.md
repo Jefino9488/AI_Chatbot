@@ -115,6 +115,8 @@ AI_Chatbot/
 │   ├── package.json
 │   ├── vite.config.js
 │   ├── index.html
+│   ├── api/
+│   │   └── proxy.js
 │   ├── .env
 │   └── src/
 │       ├── App.css
