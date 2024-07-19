@@ -18,14 +18,12 @@ AVAILABLE_MODELS = [
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
 @app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
-
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -48,7 +46,6 @@ def chat():
 
     return jsonify({'response': chatbot_response, 'image_url': image_path if image_path else ''})
 
-
 def Gemini_response(user_message, context, model_name, image_path=None, api_key=None):
     try:
         if not api_key:
@@ -70,8 +67,12 @@ def Gemini_response(user_message, context, model_name, image_path=None, api_key=
     except Exception as e:
         return str(e), None
 
-
 if __name__ == '__main__':
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
+    # Check and create the upload folder with proper permissions
+    try:
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            os.chmod(UPLOAD_FOLDER, 0o777)  # Ensure the folder is writable
+    except Exception as e:
+        print(f"Failed to create or set permissions for directory {UPLOAD_FOLDER}: {e}")
     app.run(host='0.0.0.0', port=8000, debug=True)
