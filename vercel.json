@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "projects": [
+    {
+      "name": "backend",
+      "root": "Server",
+      "builds": [
+        { "src": "main.py", "use": "@vercel/python" }
+      ],
+      "routes": [
+        { "src": "/api/(.*)", "dest": "main.py" }
+      ]
+    },
+    {
+      "name": "frontend",
+      "root": "Chatbot",
+      "builds": [
+        { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } }
+      ]
+    }
+  ]
+}
