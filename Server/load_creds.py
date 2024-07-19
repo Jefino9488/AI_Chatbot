@@ -31,3 +31,4 @@ def load_creds():
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
     return creds
+load_creds()
