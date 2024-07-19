@@ -4,7 +4,7 @@ on:
   push:
     branches: ['main']
     paths:
-      - 'src/**'
+      - 'ChatBot/src/**'
 
 permissions:
   contents: write
