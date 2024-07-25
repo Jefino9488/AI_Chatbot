@@ -104,7 +104,7 @@ API_KEY=your_google_api_key
 5. Run the backend server:
 
 ```sh
-python main.py
+python app.py
 ```
 
 ### Project Structure
