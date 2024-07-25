@@ -94,7 +94,7 @@ function App() {
     }
 
     try {
-        const response = await fetch("https://server.applikuapp.com/chat", {
+        const response = await fetch("https://botserver.applikuapp.com/chat", {
             method: "POST",
             body: formData,
         });
