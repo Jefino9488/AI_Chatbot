@@ -1,15 +1,14 @@
 # AI-`ChatBot`
 
-# AI Chatbot with PDF Context Loader
-
-This project implements an AI chatbot that can converse with users, generate images based on prompts, and extract text from PDF files to use as context for chat interactions. It uses the Gemini models for generating responses and the Monster API for image generation.
+This project implements an AI chatbot that can converse with users, generate and explain images based on prompts, and extract text from PDF files to use as context for chat interactions. It uses the Gemini models for generating responses and the Monster API for image generation.
 
 ## Features
 
 - **AI Chatbot**: Interact with the AI using text input.
 - **Voice Input**: Record and transcribe voice messages to interact with the AI.
-- **Image Generation**: Generate images based on text prompts.
+- **Image Generation and Explanation**: Generate and get explanations for images based on text prompts.
 - **PDF Context Loader**: Upload PDF files, extract text, and use it as context for chat interactions.
+- **Live Demo**: Check out the live chatbot at [AI Chatbot](https://ai-chatbot-ldj0lkmto-jefino9488s-projects.vercel.app/).
 
 ## UI Screenshots
 
@@ -18,6 +17,9 @@ This project implements an AI chatbot that can converse with users, generate ima
 
 ### Image Generation
 ![Image Generation](images/image_generation.png)
+
+### Image Explanation
+![Image Explanation](images/explain.jpg)
 
 ### PDF Context Loader
 ![PDF Context Loader](images/pdf_context_loader.png)
@@ -39,6 +41,10 @@ This project implements an AI chatbot that can converse with users, generate ima
 - Python and pip
 - Google Gemini Key [Gemini](https://aistudio.google.com/app/apikey)
 - Monster API key [Monster](https://monsterapi.ai/user/dashboard)
+
+## Setup
+
+follow the steps below to setup the project on your local machine.
 
 ### Frontend Setup
 
@@ -133,9 +139,11 @@ AI_Chatbot/
 - Type a message in the input box and press Enter or click the Send button to interact with the chatbot.
 - To record a voice message, click the Record button, speak your message, and click the Stop button.
 
-### Image Generation
+### Image Generation and Explanation
 
 - Type a message starting with "generate" followed by your prompt (e.g., "generate a sunset over mountains") and send it to get an image generated.
+
+- To get an explanation of an image, attach the image using the attach icon, followed by your prompt or question (e.g., "explain this image").
 
 ### PDF Context Loader
 
@@ -157,7 +165,8 @@ AI_Chatbot/
 {
   "message": "Your message here",
   "context": "Optional context here",
-  "model": "Selected model name here"
+  "model": "Selected model name here",
+  "geminiApiKey": "Your Gemini API key here"
 }
 ```
 
@@ -165,8 +174,10 @@ AI_Chatbot/
 
 ```json
 {
-  "response": "Chatbot's response"
+  "response": "Chatbot's response",
+  "image_url": "Image URL if applicable"
 }
+
 ```
 
 ### /generate
