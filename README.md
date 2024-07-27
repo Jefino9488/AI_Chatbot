@@ -8,7 +8,7 @@ This project implements an AI chatbot that can converse with users, generate and
 - **Voice Input**: Record and transcribe voice messages to interact with the AI.
 - **Image Generation and Explanation**: Generate and get explanations for images based on text prompts.
 - **PDF Context Loader**: Upload PDF files, extract text, and use it as context for chat interactions.
-- **Live Demo**: Check out the live chatbot at [AI Chatbot](https://ai-chatbot-ldj0lkmto-jefino9488s-projects.vercel.app/).
+- **Live Demo**: Check out the live chatbot at [AI Chatbot](https://chatbot-ui-phi-brown-87.vercel.app/).
 
 ## UI Screenshots
 
